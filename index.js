@@ -15,18 +15,24 @@ exports.handler = function(event, context) {
   })
 
   .then(function() {
+    //set some 'constants'
+    event.extension = path.extname(event.destKey);
+    event.downloadedFile = "/tmp/downloadedFile" + event.extension;
+    event.filepathForUpload = "/tmp/copied" + event.extension;
+
     //download file to /tmp
     return downloadFile({
-      filepath: "/tmp/" + event.destKey,
+      filepath: event.downloadedFile,
       url: event.srcUrl
     });
   })
 
   .then(function() {
     //execute shell/bash to scale to desired res
-    return execute({
-      shell: "cp /tmp/" + event.destKey + " /tmp/copied" + path.extname(event.destKey),
-      logOutput: true
+    console.log('copying');
+    var shellString = "cp " + event.downloadedFile + " " + event.filepathForUpload + ";";
+    return execute(event, {
+      shell: shellString
     });
   })
 
@@ -35,7 +41,7 @@ exports.handler = function(event, context) {
     return upload(event, {
       dstBucket: event.destBucket,
       dstKey: event.destKey,
-      uploadFilepath: '/tmp/copied" + path.extname(event.destKey)'
+      uploadFilepath: event.filepathForUpload
     });
   })
 

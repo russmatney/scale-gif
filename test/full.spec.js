@@ -25,7 +25,11 @@ describe('scale-gif', function() {
   });
 
   it('should call .done() when things go well', function(done) {
-    var event = {};
+    var event = {
+      srcUrl: "https://s3.amazonaws.com/thebosco/events/snl40/0050-468RX3.gif",
+      destKey: "events/partytownusa/jeff-goldblum-2.gif",
+      destBucket: "russbosco"
+    };
     var context = {
       done: function(err, message) {
         if (err || message) {
